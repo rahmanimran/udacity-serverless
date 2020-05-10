@@ -173,7 +173,7 @@ resources:
           - AttributeName: todoId
             KeyType: HASH
           - AttributeName: userId
-            keyType: RANGE
+            KeyType: RANGE
         GlobalSecondaryIndexes:
           - IndexName: UserIdIndex
             KeySchema:
