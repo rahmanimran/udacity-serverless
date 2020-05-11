@@ -1,11 +1,13 @@
 service:
   name: serverless-todo-app
 
+custom:
+  bucketName: test
+  
+
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
-
-
 
 
 provider:
@@ -212,4 +214,4 @@ resources:
               Principal: '*'
               Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.S3_BUCKET}/*'
-        Bucket: !Ref AttachmentBucket
+        BucketName: ${self:custom.bucketName}
