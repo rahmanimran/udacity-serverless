@@ -5,6 +5,7 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 provider:
   name: aws
@@ -20,7 +21,25 @@ provider:
     TODO_TABLE: Todos3-${self:provider.stage}
     S3_BUCKET: rahmanimran-cfit-serverless-imran07258-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
-
+  tracing:
+    apiGateway: true
+    lambda: true
+  
+  
+  custom:
+    documentation:
+      api:
+        info:
+          version: v1.0.0
+          title: Udagram Serverless todo
+          description: Serverless application for Todo
+      models:
+        - name: CreateTodoRequest
+          contentType: application/json
+          schema: ${file(models/create-todo-request.json)}
+        - name: UpdateTodoRequest
+          contentType: application/json
+          schema: ${file(models/update-todo-request.json)}
 
 
 functions:
