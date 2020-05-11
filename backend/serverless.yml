@@ -1,14 +1,10 @@
 service:
   name: serverless-todo-app
 
-custom:
-  bucketName: test
-  
-
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
-
+  - serverless-reqvalidator-plugin
 
 provider:
   name: aws
@@ -21,7 +17,7 @@ provider:
   region: ${opt:region, 'us-east-2'}
 
   environment:
-    TODO_TABLE: Todos1-${self:provider.stage}
+    TODO_TABLE: Todos3-${self:provider.stage}
     S3_BUCKET: rahmanimran-cfit-serverless-imran07258-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
@@ -74,6 +70,12 @@ functions:
           path: todos
           cors: true
           authorizer: RS256Auth
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new todo
+            description: Create a new todo with appropriate values
+            requestModels:
+              'application/json': CreateTodoRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -96,7 +98,13 @@ functions:
           method: patch
           path: todos/{todoId}
           cors: true
-          authorizer: RS256Auth
+          authorizer: 
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update a Todo
+            description: Update todo with todoid
+            requestModels:
+              'application/json': UpdateTodoRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -167,15 +175,16 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: todoId
-            AttributeType: S
           - AttributeName: userId
+            AttributeType: S
+          - AttributeName: todoId
             AttributeType: S
         KeySchema:
-          - AttributeName: todoId
-            KeyType: HASH
           - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: todoId
             KeyType: RANGE
+          
         GlobalSecondaryIndexes:
           - IndexName: UserIdIndex
             KeySchema:
@@ -214,4 +223,13 @@ resources:
               Principal: '*'
               Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.S3_BUCKET}/*'
-        BucketName: ${self:custom.bucketName}
+        Bucket: !Ref AttachmentBucket
+        
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
