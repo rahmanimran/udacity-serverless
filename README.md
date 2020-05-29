@@ -1,4 +1,4 @@
-Git Repo: https://github.com/rahmanimran/cfit-serverless
+Git Repo: https://github.com/rahmanimran/udacity-serverless
 
 Note: First I tried to deploy the frontend with npm version 6.14.4 but it's causing some issues (Response timeout while trying to fetch https://registry.npmjs.org/@babel%2fplugin-syntax-flow).
 
